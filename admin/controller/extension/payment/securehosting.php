@@ -7,10 +7,10 @@ class ControllerExtensionPaymentSecureHosting extends Controller {
 	public function index() {
 
 		// Compatibility for 1.4.7
-		if(empty($this->session->data['token'])) $this->session->data['token'] = '';
+		if(empty($this->session->data['user_token'])) $this->session->data['user_token'] = '';
 
 		// Load language file and settings model		
-		$this->load->language('payment/securehosting');
+		$this->load->language('extension/payment/securehosting');
 		$this->load->model('setting/setting');
 
 		// Set page title
@@ -21,13 +21,13 @@ class ControllerExtensionPaymentSecureHosting extends Controller {
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && ($this->validate())) {
 			$this->load->model('setting/setting');
 			
-			$this->model_setting_setting->editSetting('securehosting', $this->request->post);				
+			$this->model_setting_setting->editSetting('payment_securehosting', $this->request->post);
 			
 			$this->session->data['success'] = $this->language->get('text_success');
-
-			$this->response->redirect($this->url->link('extension/extension', 'token=' . $this->session->data['token'], 'SSL'));
+            
+            $this->response->redirect($this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment', true));
 		}
-		
+
 
 		// Load language texts
 		$data['heading_title'] = $this->language->get('heading_title');
@@ -38,14 +38,12 @@ class ControllerExtensionPaymentSecureHosting extends Controller {
 		$data['text_all_zones'] = $this->language->get('text_all_zones');
 		$data['text_yes'] = $this->language->get('text_yes');
 		$data['text_no'] = $this->language->get('text_no');
-
 		$data['entry_shreference'] = $this->language->get('entry_shreference');
 		$data['entry_checkcode'] = $this->language->get('entry_checkcode');
 		$data['entry_filename'] = $this->language->get('entry_filename');
 		$data['entry_as'] = $this->language->get('entry_as');
 		$data['entry_as_phrase'] = $this->language->get('entry_as_phrase');
 		$data['entry_as_referrer'] = $this->language->get('entry_as_referrer');
-		$data['entry_sharedsecret'] = $this->language->get('entry_sharedsecret');
 		$data['entry_test'] = $this->language->get('entry_test');
 		$data['entry_order_status'] = $this->language->get('entry_order_status');		
 		$data['entry_geo_zone'] = $this->language->get('entry_geo_zone');
@@ -93,109 +91,103 @@ class ControllerExtensionPaymentSecureHosting extends Controller {
   		$data['breadcrumbs'] = array();
 
    		$data['breadcrumbs'][] = array(
-			'href'      => HTTPS_SERVER . 'index.php?route=common/home&token=' . $this->session->data['token'],
+			'href'      => HTTPS_SERVER . 'index.php?route=common/dashboard&user_token=' . $this->session->data['user_token'],
        		'text'      => $this->language->get('text_home'),
       		'separator' => false
    		);
 
    		$data['breadcrumbs'][] = array(
-			'href'      => HTTPS_SERVER . 'index.php?route=extension/payment&token=' . $this->session->data['token'],
+			'href'      => HTTPS_SERVER . 'index.php?route=marketplace/extension&user_token=' . $this->session->data['user_token'] . '&type=payment',
        		'text'      => $this->language->get('text_payment'),
       		'separator' => ' :: '
    		);
 
    		$data['breadcrumbs'][] = array(
-			'href'      => HTTPS_SERVER . 'index.php?route=extension/payment/securehosting&token=' . $this->session->data['token'],
+			'href'      => HTTPS_SERVER . 'index.php?route=extension/payment/securehosting&user_token=' . $this->session->data['user_token'],
        		'text'      => $this->language->get('heading_title'),
       		'separator' => ' :: '
    		);
 				
-		$data['action'] = HTTPS_SERVER . 'index.php?route=extension/payment/securehosting&token=' . $this->session->data['token'];
+		$data['action'] = HTTPS_SERVER . 'index.php?route=extension/payment/securehosting&user_token=' . $this->session->data['user_token'];
 		
-		$data['cancel'] = HTTPS_SERVER . 'index.php?route=extension/payment&token=' . $this->session->data['token'];
+		$data['cancel'] = HTTPS_SERVER . 'index.php?route=extension/payment&user_token=' . $this->session->data['user_token'];
 		
 		
 		// Load values for fields		
-		if (isset($this->request->post['securehosting_shreference'])) {
-			$data['securehosting_shreference'] = $this->request->post['securehosting_shreference'];
+		if (isset($this->request->post['payment_securehosting_shreference'])) {
+			$data['payment_securehosting_shreference'] = $this->request->post['payment_securehosting_shreference'];
 		} else {
-			$data['securehosting_shreference'] = $this->config->get('securehosting_shreference');
+			$data['payment_securehosting_shreference'] = $this->config->get('payment_securehosting_shreference');
 		}
-		
-		if (isset($this->request->post['securehosting_checkcode'])) {
-			$data['securehosting_checkcode'] = $this->request->post['securehosting_checkcode'];
+
+		if (isset($this->request->post['payment_securehosting_checkcode'])) {
+			$data['payment_securehosting_checkcode'] = $this->request->post['payment_securehosting_checkcode'];
 		} else {
-				if($this->config->get('securehosting_checkcode') != ""){
-					$data['securehosting_checkcode'] = $this->config->get('securehosting_checkcode');
+				if($this->config->get('payment_securehosting_checkcode') != ""){
+					$data['payment_securehosting_checkcode'] = $this->config->get('payment_securehosting_checkcode');
 				} else{
-					$data['securehosting_checkcode'] = '';
+					$data['payment_securehosting_checkcode'] = '';
 				}
 		}
 
-		if (isset($this->request->post['securehosting_filename'])) {
-			$data['securehosting_filename'] = $this->request->post['securehosting_filename'];
+		if (isset($this->request->post['payment_securehosting_filename'])) {
+			$data['payment_securehosting_filename'] = $this->request->post['payment_securehosting_filename'];
 		} else {
-			$data['securehosting_filename'] = $this->config->get('securehosting_filename');
+			$data['payment_securehosting_filename'] = $this->config->get('payment_securehosting_filename');
 		}
 
-		if (isset($this->request->post['securehosting_as'])) {
-			$data['securehosting_as'] = $this->request->post['securehosting_as'];
+		if (isset($this->request->post['payment_securehosting_as'])) {
+			$data['payment_securehosting_as'] = $this->request->post['payment_securehosting_as'];
 		} else {
-			$data['securehosting_as'] = $this->config->get('securehosting_as');
+			$data['payment_securehosting_as'] = $this->config->get('payment_securehosting_as');
 		}
 
-		if (isset($this->request->post['securehosting_as_phrase'])) {
-			$data['securehosting_as_phrase'] = $this->request->post['securehosting_as_phrase'];
+		if (isset($this->request->post['payment_securehosting_as_phrase'])) {
+			$data['payment_securehosting_as_phrase'] = $this->request->post['payment_securehosting_as_phrase'];
 		} else {
-			$data['securehosting_as_phrase'] = $this->config->get('securehosting_as_phrase');
+			$data['payment_securehosting_as_phrase'] = $this->config->get('payment_securehosting_as_phrase');
 		}
 
-		if (isset($this->request->post['securehosting_as_referrer'])) {
-			$data['securehosting_as_referrer'] = $this->request->post['securehosting_as_referrer'];
+		if (isset($this->request->post['payment_securehosting_as_referrer'])) {
+			$data['payment_securehosting_as_referrer'] = $this->request->post['payment_securehosting_as_referrer'];
 		} else {
-			$data['securehosting_as_referrer'] = $this->config->get('securehosting_as_referrer');
+			$data['payment_securehosting_as_referrer'] = $this->config->get('payment_securehosting_as_referrer');
 		}
 
-		if (isset($this->request->post['securehosting_sharedsecret'])) {
-			$data['securehosting_sharedsecret'] = $this->request->post['securehosting_sharedsecret'];
+		if (isset($this->request->post['payment_securehosting_test'])) {
+			$data['payment_securehosting_test'] = $this->request->post['payment_securehosting_test'];
 		} else {
-			$data['securehosting_sharedsecret'] = $this->config->get('securehosting_sharedsecret');
+			$data['payment_securehosting_test'] = $this->config->get('payment_securehosting_test');
 		}
 
-		if (isset($this->request->post['securehosting_test'])) {
-			$data['securehosting_test'] = $this->request->post['securehosting_test'];
+		if (isset($this->request->post['payment_securehosting_order_status_id'])) {
+			$data['payment_securehosting_order_status_id'] = $this->request->post['payment_securehosting_order_status_id'];
 		} else {
-			$data['securehosting_test'] = $this->config->get('securehosting_test');
-		}
-
-		if (isset($this->request->post['securehosting_order_status_id'])) {
-			$data['securehosting_order_status_id'] = $this->request->post['securehosting_order_status_id'];
-		} else {
-			$data['securehosting_order_status_id'] = $this->config->get('securehosting_order_status_id');
+			$data['payment_securehosting_order_status_id'] = $this->config->get('payment_securehosting_order_status_id');
 		}
 
 		$this->load->model('localisation/order_status');
 		$data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
 
-		if (isset($this->request->post['securehosting_geo_zone_id'])) {
-			$data['securehosting_geo_zone_id'] = $this->request->post['securehosting_geo_zone_id'];
+		if (isset($this->request->post['pa  yment_securehosting_geo_zone_id'])) {
+			$data['payment_securehosting_geo_zone_id'] = $this->request->post['payment_securehosting_geo_zone_id'];
 		} else {
-			$data['securehosting_geo_zone_id'] = $this->config->get('securehosting_geo_zone_id');
+			$data['payment_securehosting_geo_zone_id'] = $this->config->get('payment_securehosting_geo_zone_id');
 		}
 
 		$this->load->model('localisation/geo_zone');
 		$data['geo_zones'] = $this->model_localisation_geo_zone->getGeoZones();
 
-		if (isset($this->request->post['securehosting_status'])) {
-			$data['securehosting_status'] = $this->request->post['securehosting_status'];
+		if (isset($this->request->post['payment_securehosting_status'])) {
+			$data['payment_securehosting_status'] = $this->request->post['payment_securehosting_status'];
 		} else {
-			$data['securehosting_status'] = $this->config->get('securehosting_status');
+			$data['payment_securehosting_status'] = $this->config->get('payment_securehosting_status');
 		}
 
-		if (isset($this->request->post['securehosting_sort_order'])) {
-			$data['securehosting_sort_order'] = $this->request->post['securehosting_sort_order'];
+		if (isset($this->request->post['payment_securehosting_sort_order'])) {
+			$data['payment_securehosting_sort_order'] = $this->request->post['payment_securehosting_sort_order'];
 		} else {
-			$data['securehosting_sort_order'] = $this->config->get('securehosting_sort_order');
+			$data['payment_securehosting_sort_order'] = $this->config->get('payment_securehosting_sort_order');
 		}
 
 		// Render template
@@ -204,10 +196,9 @@ class ControllerExtensionPaymentSecureHosting extends Controller {
         $data['footer'] = $this->load->controller('common/footer');
 
 
-        $this->response->setOutput($this->load->view('payment/securehosting.tpl', $data));
+        $this->response->setOutput($this->load->view('extension/payment/securehosting', $data));
 	}
-	
-	
+
 	/*
 	 *
 	 * Validation code for form
@@ -218,18 +209,32 @@ class ControllerExtensionPaymentSecureHosting extends Controller {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
 		
-		if (empty($this->request->post['securehosting_shreference'])) {
+		if (empty($this->request->post['payment_securehosting_shreference'])) {
 			$this->error['warning'] = $this->language->get('error_shreference');
 		}
 		
-		if (empty($this->request->post['securehosting_checkcode'])) {
+		if (empty($this->request->post['payment_securehosting_checkcode'])) {
 			$this->error['warning'] = $this->language->get('error_checkcode');
 		}
 		
-		if (empty($this->request->post['securehosting_filename'])) {
+		if (empty($this->request->post['payment_securehosting_filename'])) {
 			$this->error['warning'] = $this->language->get('error_filename');
 		}
 
 		return !$this->error;
 	}
+
+	public function install() {
+	    $this->load->model('extension/payment/securehosting');
+
+	    $this->model_extension_payment_securehosting->install();
+    }
+
+	public function uninstall() {
+	    $this->load->model('extension/payment/securehosting');
+
+	    $this->model_extension_payment_securehosting->uninstall();
+    }
+
+
 }
