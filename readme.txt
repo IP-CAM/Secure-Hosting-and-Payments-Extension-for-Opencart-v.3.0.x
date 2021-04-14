@@ -126,7 +126,7 @@ A4.	You have activated the Advanced Secuitems within your Secure Hosting and Pay
 	account but not correctly configured it. Please see steps 1-3 of the Advanced 
 	Configuration section of this guide.
 
-===========
+==========
 = Contact =
 ===========
 If you have any problems installing this module feel free to contact our support team at:
